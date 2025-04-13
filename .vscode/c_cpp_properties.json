@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/server/include",
+        "${workspaceFolder}/server/src"
+      ]
+    }
+  ],
+  "version": 4
+}
