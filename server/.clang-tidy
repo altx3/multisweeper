@@ -1,0 +1,4 @@
+# server/.clang-tidy
+Checks: "modernize-*,readability-*,-readability-identifier-length"
+WarningsAsErrors: "*"
+HeaderFilterRegex: ".*"

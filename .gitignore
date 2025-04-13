@@ -1,0 +1,5 @@
+# General
+*.o
+*.log
+*.swp
+.DS_Store

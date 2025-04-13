@@ -1,0 +1,8 @@
+# server/.clang-format
+BasedOnStyle: LLVM
+IndentWidth: 2
+ColumnLimit: 80
+AccessModifierOffset: -2
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
