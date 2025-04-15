@@ -1,0 +1,6 @@
+option(
+  'ssl',
+  type: 'combo',
+  choices: ['auto', 'boringssl', 'openssl', 'wolfssl', 'none'],
+  description: 'Which SSL backend to use'
+)

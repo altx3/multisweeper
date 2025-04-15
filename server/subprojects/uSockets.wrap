@@ -1,0 +1,9 @@
+[wrap-git]
+url = https://github.com/uNetworking/uSockets
+revision = 833497e8e0988f7fd8d33cd4f6f36056c68d225d
+depth = 1
+directory = uSockets-833497e8e0988f7fd8d33cd4f6f36056c68d225d
+patch_directory = uSockets-833497e8e0988f7fd8d33cd4f6f36056c68d225d
+
+[provide]
+uSockets = uSockets_dep

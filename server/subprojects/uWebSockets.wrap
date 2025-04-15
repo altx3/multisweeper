@@ -1,0 +1,9 @@
+[wrap-git]
+url = https://github.com/uNetworking/uWebSockets
+revision = v20.74.0
+depth = 1
+directory = uWebSockets-v20.74.0
+patch_directory = uWebSockets-v20.74.0
+
+[provide]
+uWebSockets = uWebSockets_dep

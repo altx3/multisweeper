@@ -1,48 +1,68 @@
 {
   "version": "2.0.0",
+  "type": "shell",
+  "presentation": {
+    "echo": true,
+    "reveal": "always",
+    "focus": false,
+    "panel": "dedicated",
+    "showReuseMessage": true,
+    "clear": true
+  },
   "tasks": [
+    // Clobber our build directory to prepare for re-setup
     {
-      "label": "Build Server",
-      "type": "shell",
-      "command": "meson setup builddir --reconfigure && meson compile -C builddir",
+      "label": "meson: remove",
+      "command": "rm -fr build/",
       "group": "build",
-      "options": {
-        "cwd": "${workspaceFolder}/server"
-      }
+      "options": { "cwd": "${workspaceFolder}/server/" }
     },
+
+    //  Build and run server
     {
-      "label": "Run Server",
-      "type": "shell",
-      "command": "./builddir/multisweeper-server",
-      "group": {
-        "kind": "test",
-        "isDefault": true
-      },
-      "dependsOn": ["Build Server"],
-      "options": {
-        "cwd": "${workspaceFolder}/server"
-      }
+      "label": "meson: setup",
+      "command": [
+        "meson setup build/",
+        "-Dbuildtype=debug",
+        "-Dlibuv:warning_level=0",
+        "-DuSockets:warning_level=0",
+        "-DuWebSockets:warning_level=0",
+        "-DuWebSockets:c_args=-Wno-attributes",
+        "-DuSockets:ssl=none"
+      ],
+      "options": { "cwd": "${workspaceFolder}/server/" }
     },
+
+    {
+      "label": "meson: build",
+      "command": "meson compile -C build multisweeper-server",
+      "group": "build",
+      "options": { "cwd": "${workspaceFolder}/server/" }
+    },
+
+    {
+      "label": "Run server",
+      "dependsOn": "meson: build",
+      "command": "./build/multisweeper-server",
+      "group": "build",
+      "options": { "cwd": "${workspaceFolder}/server/" }
+    },
+
+    // Format and lint
     {
       "label": "Format Server (clang-format)",
-      "type": "shell",
-      "command": "find . -name '*.cpp' -o -name '*.h' -o -name '*.hpp' | xargs clang-format --dry-run --Werror",
+      "command": "find ./src ./include -name '*.cpp' -o -name '*.h' -o -name '*.hpp' | xargs clang-format --dry-run --Werror",
       "group": {
         "kind": "test",
         "isDefault": false
       },
-      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/server/" },
       "detail": "Formats the active C++ file using the C/C++ extension formatter."
     },
+    // TODO: figure out this header filter thing
     {
       "label": "Lint Server (clang-tidy)",
-      "type": "shell",
-      "windows": {
-        "command": "echo bruh this is cooked on windows I\"'\"ll figure it out some other time. {workspaceFolder} be use / in windows"
-      },
-      "linux": {
-        "command": "find . -type f \\( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) | xargs -r sh -c 'clang-tidy \"$@\" -- -I./server/include -std=c++20' sh"
-      },
+      "command": "find ./src ./include  -type f \\( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) | xargs -r sh -c 'clang-tidy \"$@\" --header-filter=.*server/src/.* -- -I./include -std=c++20' sh",
       "group": {
         "kind": "test",
         "isDefault": false
@@ -50,7 +70,7 @@
       "problemMatcher": [
         {
           "owner": "cpp",
-          "fileLocation": ["relative", "${workspaceFolder}"],
+          "fileLocation": ["relative", "${workspaceFolder}/server/"],
           "pattern": {
             "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
             "file": 1,
@@ -61,7 +81,14 @@
           }
         }
       ],
+      "options": { "cwd": "${workspaceFolder}/server/" },
       "detail": "Runs clang-tidy on all C++ files in the workspace."
+    },
+
+    // I'll actually make client task later... maybe
+    {
+      "label": "Show client commands",
+      "command": "echo Make sure to be in the client folder! && echo npm run [dev, build, preview, lint, lint:fix, format] "
     }
   ]
 }

@@ -3,8 +3,9 @@
     {
       "name": "Win32",
       "includePath": [
-        "${workspaceFolder}/server/include",
-        "${workspaceFolder}/server/src"
+        "${workspaceFolder}/server/include/**",
+        "${workspaceFolder}/server/src/**",
+        "${workspaceFolder}/server/subprojects/**"
       ]
     }
   ],
