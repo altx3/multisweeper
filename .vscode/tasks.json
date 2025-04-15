@@ -23,12 +23,14 @@
       "label": "meson: setup",
       "command": [
         "meson setup build/",
+        "--cross-file ./.toolchains/mingw.cross.txt",
         "-Dbuildtype=debug",
         "-Dlibuv:warning_level=0",
         "-DuSockets:warning_level=0",
         "-DuWebSockets:warning_level=0",
         "-DuWebSockets:c_args=-Wno-attributes",
-        "-DuSockets:ssl=none"
+        "-DuSockets:ssl=none",
+        "-DuSockets:libuv=true"
       ],
       "options": { "cwd": "${workspaceFolder}/server/" }
     },
