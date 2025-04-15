@@ -1,0 +1,5 @@
+# Ignore all subprojects
+/*/
+
+# Preserve these directories as they are not subprojects
+!/packagefiles/

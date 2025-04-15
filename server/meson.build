@@ -1,6 +1,14 @@
 project('multisweeper-server', 'cpp',
-        version : '0.0.1',
-        default_options : ['cpp_std=c++20', 'default_library=static'])
+         version : '0.0.1',
+         default_options : ['cpp_std=c++17',
+                            'default_library=static'],
+         meson_version: '>=1.1')
+
+# Dependencies
+
+uWebSockets_dep = dependency('uWebSockets')
+
+# Multisweeper++
 
 inc = include_directories('include')
 
@@ -10,4 +18,5 @@ src = [
 ]
 
 executable('multisweeper-server', src,
-           include_directories : inc)
+            include_directories : inc,
+            dependencies: [uWebSockets_dep])

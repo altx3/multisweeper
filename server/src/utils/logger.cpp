@@ -3,10 +3,10 @@
 
 void Logger::init()
 {
-  std::cout << "Logger initialized" << std::endl;
+  std::cout << "Logger initialized" << '\n';
 }
 
 void Logger::log(const std::string &message)
 {
-  std::cout << "[LOG] " << message << std::endl;
+  std::cout << "[LOG] " << message << '\n';
 }

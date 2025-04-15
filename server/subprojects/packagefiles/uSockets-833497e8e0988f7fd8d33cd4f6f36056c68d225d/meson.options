@@ -1,0 +1,49 @@
+option(
+  'ssl',
+  type: 'combo',
+  choices: ['auto', 'boringssl', 'openssl', 'wolfssl', 'none'],
+  value: 'auto',
+  description: 'Which SSL backend to use'
+)
+
+option(
+  'io_uring',
+  type: 'boolean',
+  value: false,
+  description: 'If you want to add io_uring'
+)
+
+option(
+  'libuv',
+  type: 'boolean',
+  value: false,
+  description: 'If you want to add libuv'
+)
+
+option(
+  'asio',
+  type: 'boolean',
+  value: false,
+  description: 'If you want to add ASIO'
+)
+
+option(
+  'gcd',
+  type: 'boolean',
+  value: false,
+  description: 'If you want to add GCD'
+)
+
+option(
+  'asan',
+  type: 'boolean',
+  value: false,
+  description: 'If you want to add asan'
+)
+
+option(
+  'quic',
+  type: 'boolean',
+  value: false,
+  description: 'If you want to add QUIC'
+)

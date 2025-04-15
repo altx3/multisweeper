@@ -3,8 +3,11 @@
     {
       "name": "Win32",
       "includePath": [
-        "${workspaceFolder}/server/include",
-        "${workspaceFolder}/server/src"
+        "C:/mingw64/include",
+        "C:/mingw64/x86_64-w64-mingw32/include",
+        "${workspaceFolder}/server/include/**",
+        "${workspaceFolder}/server/src/**",
+        "${workspaceFolder}/server/subprojects/**"
       ]
     }
   ],
