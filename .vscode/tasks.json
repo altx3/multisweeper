@@ -64,7 +64,7 @@
     // TODO: figure out this header filter thing
     {
       "label": "Lint Server (clang-tidy)",
-      "command": "find ./src ./include  -type f \\( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) | xargs -r sh -c 'clang-tidy \"$@\" --header-filter=.*server/src/.* -- -I./include -std=c++20' sh",
+      "command": "find ./src ./include  -type f \\( -name '*.cpp' -o -name '*.hpp' \\) | xargs -r sh -c 'clang-tidy \"$@\" -- -I./include' sh",
       "group": {
         "kind": "test",
         "isDefault": false
