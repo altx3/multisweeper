@@ -20,7 +20,7 @@
   "C_Cpp.default.compileCommands": "${workspaceFolder}/server/build/compile_commands.json",
 
   "C_Cpp.default.defines": ["_WIN32", "_CRT_SECURE_NO_WARNINGS"],
-  "cmake.ignoreCMakeListsMissing": true,
+
   "files.associations": {
     "iostream": "cpp",
     "xstring": "cpp",
@@ -103,6 +103,8 @@
     "xutility": "cpp",
     "*.tcc": "cpp",
     "memory_resource": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+
+    "mesonbuild.configureOnOpen": false
   }
 }

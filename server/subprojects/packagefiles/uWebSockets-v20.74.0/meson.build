@@ -1,4 +1,4 @@
-project('uWebSockets', 'c', 'cpp', version: 'v20.74.0')
+project('uWebSockets', 'c', 'cpp', version: 'v20.74.0', meson_version: '>=1.1')
 
 uSockets_dep = dependency('uSockets')
 

@@ -1,7 +1,6 @@
 project('multisweeper-server', 'cpp',
          version : '0.0.1',
-         default_options : ['cpp_std=c++17',
-                            'default_library=static'],
+         default_options : ['cpp_std=c++17'],
          meson_version: '>=1.1')
 
 # Dependencies

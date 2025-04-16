@@ -9,6 +9,12 @@
     "showReuseMessage": true,
     "clear": true
   },
+  "options": {
+    "shell": {
+      "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "args": ["-c"]
+    }
+  },
   "tasks": [
     // Clobber our build directory to prepare for re-setup
     {
@@ -43,8 +49,17 @@
     },
 
     {
-      "label": "Run server",
+      "label": "Copy dll's",
       "dependsOn": "meson: build",
+      "command": "find build/subprojects -type f -iname '*.dll' -exec cp -f {} build/ \\;",
+      "group": "build",
+      "options": { "cwd": "${workspaceFolder}/server/" }
+    },
+
+    {
+      "label": "Run server",
+      "dependsOrder": "sequence",
+      "dependsOn": ["meson: build", "Copy dll's"],
       "command": "./build/multisweeper-server",
       "group": "build",
       "options": { "cwd": "${workspaceFolder}/server/" }
