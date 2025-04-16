@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material';
+import SimpleWebSocketClient from './SimpleWebSocketClient';
 
 function Home() {
   return (
@@ -12,9 +13,12 @@ function Home() {
         textAlign: 'center',
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        Multisweeper++
-      </Typography>
+      <Box>
+        <Typography variant="h4" gutterBottom>
+          Multisweeper++
+        </Typography>
+        <SimpleWebSocketClient />
+      </Box>
     </Box>
   );
 }

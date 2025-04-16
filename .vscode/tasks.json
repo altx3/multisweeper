@@ -9,6 +9,12 @@
     "showReuseMessage": true,
     "clear": true
   },
+  "options": {
+    "shell": {
+      "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "args": ["-c"]
+    }
+  },
   "tasks": [
     // Clobber our build directory to prepare for re-setup
     {
@@ -43,8 +49,17 @@
     },
 
     {
-      "label": "Run server",
+      "label": "Copy dll's",
       "dependsOn": "meson: build",
+      "command": "find build/subprojects -type f -iname '*.dll' -exec cp -f {} build/ \\;",
+      "group": "build",
+      "options": { "cwd": "${workspaceFolder}/server/" }
+    },
+
+    {
+      "label": "Run server",
+      "dependsOrder": "sequence",
+      "dependsOn": ["meson: build", "Copy dll's"],
       "command": "./build/multisweeper-server",
       "group": "build",
       "options": { "cwd": "${workspaceFolder}/server/" }
@@ -64,7 +79,8 @@
     // TODO: figure out this header filter thing
     {
       "label": "Lint Server (clang-tidy)",
-      "command": "find ./src ./include  -type f \\( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) | xargs -r sh -c 'clang-tidy \"$@\" --header-filter=.*server/src/.* -- -I./include -std=c++20' sh",
+      "type": "shell",
+      "command": "find ./src ./include -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -print0 | xargs -0 -I{} clang-tidy -p ./build {} -- -I./include",
       "group": {
         "kind": "test",
         "isDefault": false
@@ -85,12 +101,6 @@
       ],
       "options": { "cwd": "${workspaceFolder}/server/" },
       "detail": "Runs clang-tidy on all C++ files in the workspace."
-    },
-
-    // I'll actually make client task later... maybe
-    {
-      "label": "Show client commands",
-      "command": "echo Make sure to be in the client folder! && echo npm run [dev, build, preview, lint, lint:fix, format] "
     }
   ]
 }
