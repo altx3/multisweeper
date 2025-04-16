@@ -7,9 +7,9 @@ Checks: >
   misc-unused-*,
   performance-*,
   cppcoreguidelines-*,
-  -cppcoreguidelines-pro-type-member-init,
+  -cppcoreguidelines-pro-type-member-init
 WarningsAsErrors: "*"
-HeaderFilterRegex: "^(./src|./include)/"
+HeaderFilterRegex: "^(src|include)/"
 CheckOptions:
   - key: modernize-use-nullptr.NullPointers
     value: "nullptr"
@@ -18,11 +18,9 @@ CheckOptions:
 
 ExtraArgs:
   - "-std=c++17"
-# Use ExtraArgsBefore to set external dependencies as system headers.
+
 ExtraArgsBefore:
   - "-isystem./subprojects/uWebSockets-v20.74.0/src"
   - "-isystem./subprojects/uSockets-833497e8e0988f7fd8d33cd4f6f36056c68d225d/src"
   - "-isystem./subprojects/libuv-v1.49.1"
   - "-isystem./subprojects/zlib-1.3.1"
-
-InheritParentConfig: true

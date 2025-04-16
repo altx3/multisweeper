@@ -79,7 +79,8 @@
     // TODO: figure out this header filter thing
     {
       "label": "Lint Server (clang-tidy)",
-      "command": "find ./src ./include  -type f \\( -name '*.cpp' -o -name '*.hpp' \\) | xargs -r sh -c 'clang-tidy \"$@\" -- -I./include' sh",
+      "type": "shell",
+      "command": "find ./src ./include -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -print0 | xargs -0 -I{} clang-tidy -p ./build {} -- -I./include",
       "group": {
         "kind": "test",
         "isDefault": false
@@ -100,12 +101,6 @@
       ],
       "options": { "cwd": "${workspaceFolder}/server/" },
       "detail": "Runs clang-tidy on all C++ files in the workspace."
-    },
-
-    // I'll actually make client task later... maybe
-    {
-      "label": "Show client commands",
-      "command": "echo Make sure to be in the client folder! && echo npm run [dev, build, preview, lint, lint:fix, format] "
     }
   ]
 }

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 
 #include "logger.hpp"
@@ -10,36 +9,59 @@ constexpr int PORT = 9001;
 auto main() -> int
 {
   Logger::init();
+  Logger::log("Backend server starting...");
 
-  struct PerSocketData
+  struct EmptyData
   {
-    /* Define your user data */
-    int something;
   };
 
   uWS::App()
-      .ws<PerSocketData>(
-          "/*",
-          {
-              // This callback runs when a client connects
-              .open = [](auto *ws [[maybe_unused]])
-              { std::cout << "A client connected" << std::endl; },
-          })
-      .listen(PORT,
-              [](auto *listen_socket)
-              {
-                if (listen_socket)
-                {
-                  std::cout << "Server listening on port 9001" << std::endl;
-                }
-                else
-                {
-                  std::cout << "Failed to listen on port 9001" << std::endl;
-                }
-              })
+    // Define WebSocket behavior for the route "/*" (all routes)
+    .ws<EmptyData>("/*",
+                   {// This callback runs when a client connects
+                    .open = [](auto *ws [[maybe_unused]])
+                    { Logger::log("A client connected"); },
 
-      // Start the server
-      .run();
-  Logger::log("Backend server starting...");
+                    // This callback runs when a client sends a message
+                    .message =
+                      [](auto *ws, std::string_view message, uWS::OpCode opCode)
+                    {
+                      Logger::log("Received message: " + std::string(message));
+
+                      // Simple ping-pong: if client sends "ping", respond with
+                      // "pong"
+                      if (message == "ping")
+                      {
+                        ws->send("pong", opCode);
+                      }
+                      else
+                      {
+                        // Echo the message back
+                        ws->send(message, opCode);
+                      }
+                    },
+
+                    // This callback runs when a client disconnects
+                    .close =
+                      [](auto *, int code, std::string_view)
+                    {
+                      Logger::log("A client disconnected, code: " +
+                                  std::to_string(code));
+                    }})
+
+    // Start listening on port 9001
+    .listen(PORT,
+            [](auto *listen_socket)
+            {
+              if (listen_socket)
+              {
+                Logger::log("Server listening on port " + std::to_string(PORT));
+              }
+              else
+              {
+                Logger::log("Failed to listen on port " + std::to_string(PORT));
+              }
+            })
+    .run();
   return 0;
 }
