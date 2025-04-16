@@ -32,6 +32,7 @@ auto main() -> int
                       // "pong"
                       if (message == "ping")
                       {
+                        Logger::log("Sent pong");
                         ws->send("pong", opCode);
                       }
                       else
