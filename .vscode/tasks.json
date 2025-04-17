@@ -28,21 +28,24 @@
     {
       "label": "meson: setup",
       "command": [
+        "if [ ! -d build ]; then",
         "meson setup build/",
         "--cross-file ./.toolchains/mingw.cross.txt",
         "-Dbuildtype=debug",
         "-Dlibuv:warning_level=0",
+        "-Dlibuv:build_tests=false",
         "-DuSockets:warning_level=0",
         "-DuWebSockets:warning_level=0",
         "-DuWebSockets:c_args=-Wno-attributes",
-        "-DuSockets:ssl=none",
-        "-DuSockets:libuv=true"
+        "-DuSockets:libuv=true;",
+        "else echo 'build/ already exists'; fi"
       ],
       "options": { "cwd": "${workspaceFolder}/server/" }
     },
 
     {
       "label": "meson: build",
+      "dependsOn": "meson: setup",
       "command": "meson compile -C build multisweeper-server",
       "group": "build",
       "options": { "cwd": "${workspaceFolder}/server/" }
