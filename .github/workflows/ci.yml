@@ -33,13 +33,21 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build python3-pip zlib1g-dev libuv1-dev clang-format
+          sudo apt-get install -y ninja-build python3-pip zlib1g-dev libuv1-dev
           pip3 install meson
+
+      - name: Install clang-format-20
+        run: |
+          wget https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.2/clang+llvm-20.1.2-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+          tar -xJf clang+llvm-20.1.2-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+          sudo cp clang+llvm-20.1.2-x86_64-linux-gnu-ubuntu-22.04/bin/clang-format /usr/local/bin/clang-format
+          sudo chmod +x /usr/local/bin/clang-format
+          clang-format --version  # Should show 20.1.2
 
       - name: Check C++ formatting
         run: |
           cd server
-          find src include -name '*.cpp' -o -name '*.h' | xargs clang-format -n --Werror
+          find src include -name '*.cpp' -o -name '*.h' | xargs clang-format -n --Werror --style=file
         env:
           CLANG_FORMAT_STYLE: file
 
