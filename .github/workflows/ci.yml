@@ -10,13 +10,21 @@ jobs:
     name: Check pull request title
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Get latest PR title via GitHub API
+        id: prtitle
+        run: |
+          pr_url="${{ github.event.pull_request.url }}"
+          pr_title=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                           -H "Accept: application/vnd.github+json" \
+                           "$pr_url" | jq -r .title)
+          echo "PR Title: $pr_title"
+          echo "pr_title=$pr_title" >> "$GITHUB_OUTPUT"
 
       - name: Validate PR title
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          if [[ ! $PR_TITLE =~ ^#[0-9]+ ]]; then
+          PR_TITLE="${{ steps.prtitle.outputs.pr_title }}"
+          echo "Validating PR title: $PR_TITLE"
+          if [[ ! "$PR_TITLE" =~ ^#[0-9]+ ]]; then
             echo "❌ Error: PR title must start with an issue number (e.g., '#123 Fix bug'). Current title: '$PR_TITLE'"
             exit 1
           else
