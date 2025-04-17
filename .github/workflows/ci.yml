@@ -15,7 +15,7 @@ jobs:
 
       - name: Validate PR title
         run: |
-          PR_TITLE="${{ $(gh pr view "$PR_URL" --json title -q .title) }}"
+          PR_TITLE="${{ gh pr view "$PR_URL" --json title -q .title }}"
           if [[ ! $PR_TITLE =~ ^#[0-9]+ ]]; then
             echo "❌ Error: PR title must start with an issue number (e.g., '#123 Fix bug'). Current title: '$PR_TITLE'"
             exit 1
