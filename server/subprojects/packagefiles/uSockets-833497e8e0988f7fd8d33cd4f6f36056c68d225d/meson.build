@@ -49,11 +49,11 @@ if ssl_opt == 'boringssl' or auto_dep.name() == 'boringssl'
   c_args += ['-Iboringssl/include', '-pthread', '-DLIBUS_USE_OPENSSL']
 endif
 
-if ssl_opt == 'openssl' or auto_dep.name() == 'openssl
+if ssl_opt == 'openssl' or auto_dep.name() == 'openssl'
   c_args += ['-DLIBUS_USE_OPENSSL']
 endif
 
-if ssl_opt == 'wolfssl' or auto_dep.name() == 'wolfssl
+if ssl_opt == 'wolfssl' or auto_dep.name() == 'wolfssl'
   c_args += ['-DLIBUS_USE_WOLFSSL', '-I/usr/local/include']
 endif
 
