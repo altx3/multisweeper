@@ -7,7 +7,7 @@ on:
 
 jobs:
   check-pr-title:
-    name: Build Backend
+    name: Check pull request title
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -40,6 +40,8 @@ jobs:
         run: |
           cd server
           find src include -name '*.cpp' -o -name '*.h' | xargs clang-format -n --Werror
+        env:
+          CLANG_FORMAT_STYLE: file
 
       - name: Configure Meson
         run: |
