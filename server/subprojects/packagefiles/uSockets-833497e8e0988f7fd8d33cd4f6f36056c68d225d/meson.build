@@ -41,28 +41,25 @@ ssl_dep = {
   'none':      dependency('', required: false),
 }[ssl_opt]
 
-if ssl_opt == 'boringssl' or ssl_opt == 'openssl'
+if ssl_opt == 'boringssl' or ssl_opt == 'openssl' or auto_dep.name() == 'openssl' or auto_dep.name() == 'boringssl'
   uSockets_src += ['src/crypto/sni_tree.cpp']
 endif
 
-if ssl_opt == 'boringssl'
+if ssl_opt == 'boringssl' or auto_dep.name() == 'boringssl'
   c_args += ['-Iboringssl/include', '-pthread', '-DLIBUS_USE_OPENSSL']
 endif
 
-if ssl_opt == 'openssl'
+if ssl_opt == 'openssl' or auto_dep.name() == 'openssl
   c_args += ['-DLIBUS_USE_OPENSSL']
 endif
 
-if ssl_opt == 'wolfssl'
+if ssl_opt == 'wolfssl' or auto_dep.name() == 'wolfssl
   c_args += ['-DLIBUS_USE_WOLFSSL', '-I/usr/local/include']
 endif
 
 if not ssl_dep.found()
   c_args += ['-DLIBUS_NO_SSL']
 endif
-
-message(' - ', ssl_dep.name())
-message(c_args)
 
 # io_uring configuration
 
