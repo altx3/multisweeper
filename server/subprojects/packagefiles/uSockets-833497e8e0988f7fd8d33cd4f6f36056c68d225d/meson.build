@@ -57,7 +57,7 @@ if ssl_opt == 'wolfssl'
   c_args += ['-DLIBUS_USE_WOLFSSL', '-I/usr/local/include']
 endif
 
-if ssl_opt == 'none'
+if not ssl_dep.found()
   c_args += ['-DLIBUS_NO_SSL']
 endif
 

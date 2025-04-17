@@ -37,7 +37,6 @@
         "-DuSockets:warning_level=0",
         "-DuWebSockets:warning_level=0",
         "-DuWebSockets:c_args=-Wno-attributes",
-        "-DuSockets:ssl=none",
         "-DuSockets:libuv=true;",
         "else echo 'build/ already exists'; fi"
       ],
