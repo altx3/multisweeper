@@ -18,6 +18,7 @@
 
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: LLVM, IndentWidth: 2, ColumnLimit: 0 }",
   "C_Cpp.default.compileCommands": "${workspaceFolder}/server/build/compile_commands.json",
-   "C_Cpp.default.intelliSenseMode": "gcc-x86",
+  "C_Cpp.default.intelliSenseMode": "gcc-x86",
+
   "mesonbuild.configureOnOpen": false
 }
