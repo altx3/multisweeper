@@ -61,6 +61,9 @@ if not ssl_dep.found()
   c_args += ['-DLIBUS_NO_SSL']
 endif
 
+message(' - ', ssl_dep.name())
+message(c_args)
+
 # io_uring configuration
 
 io_uring_dep = dependency('', required: false)
