@@ -38,7 +38,7 @@ ssl_dep = {
   'boringssl': boringssl_dep,
   'openssl':   openssl_dep,
   'wolfssl':   wolfssl_dep,
-  'none':      [],
+  'none':      dependency('', required: false),
 }[ssl_opt]
 
 if ssl_opt == 'boringssl' or ssl_opt == 'openssl'
@@ -57,7 +57,7 @@ if ssl_opt == 'wolfssl'
   c_args += ['-DLIBUS_USE_WOLFSSL', '-I/usr/local/include']
 endif
 
-if ssl_dep == []
+if ssl_opt == 'none'
   c_args += ['-DLIBUS_NO_SSL']
 endif
 
