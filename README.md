@@ -1,5 +1,19 @@
 # multisweeper++
 
+## Techonologies
+
+## Backend (C++)
+
+- uWebSockets
+- nlohmann_json
+- meson
+
+## Frontend (React)
+
+- React
+- Typescript
+- MUI
+
 ## Setup
 
 I'm assuming your using Windows
