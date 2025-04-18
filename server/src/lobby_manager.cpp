@@ -2,7 +2,7 @@
 
 auto LobbyManager::create_lobby(const player_id_t &host_id) -> lobby_id_t
 {
-  lobby_id_t lobby_id = generate_random_id<lobby_id_t>("lobby_");
+  auto lobby_id = generate_random_id<lobby_id_t>("lobby_");
   lobbies_.emplace(lobby_id, Lobby(lobby_id, host_id));
   return lobby_id;
 }

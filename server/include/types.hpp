@@ -3,12 +3,15 @@
 #include <random>
 #include <string>
 
+constexpr int MIN_ID = 1000;
+constexpr int MAX_ID = 9999;
+
 template <typename IdType>
 auto generate_random_id(const std::string &prefix) -> IdType
 {
   static std::random_device rd;
   static std::mt19937 gen(rd());
-  static std::uniform_int_distribution<> dis(1000, 9999);
+  static std::uniform_int_distribution<> dis(MIN_ID, MAX_ID);
 
   return IdType(prefix + std::to_string(dis(gen)));
 }
@@ -36,6 +39,11 @@ template <typename T, typename Tag> struct StrongTypedef
   operator const T &() const
   {
     return value;
+  }
+
+  auto empty() const -> decltype(std::declval<const T &>().empty(), bool())
+  {
+    return value.empty();
   }
 };
 
