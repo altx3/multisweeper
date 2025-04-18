@@ -18,7 +18,7 @@ void HTTPHandler::register_routes()
 }
 
 void HTTPHandler::handle_create_lobby(uWS::HttpResponse<false> *res,
-                                      uWS::HttpRequest * /*req*/)
+                                      uWS::HttpRequest *req [[maybe_unused]])
 {
   auto host_id = generate_random_id<player_id_t>("player_");
   lobby_id_t lobby_id = lobby_manager_->create_lobby(host_id);

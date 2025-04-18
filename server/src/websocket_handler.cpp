@@ -21,8 +21,8 @@ void WebSocketHandler::register_routes()
      { on_close(ws, code, reason); }});
 }
 
-void WebSocketHandler::on_open(
-  uWS::WebSocket<false, true, WebSocketData> * /*ws*/)
+void WebSocketHandler::on_open(uWS::WebSocket<false, true, WebSocketData> *ws
+                               [[maybe_unused]])
 {
   Logger::log("WebSocket connection opened");
 }
