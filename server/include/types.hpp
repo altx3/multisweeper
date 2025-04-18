@@ -9,15 +9,15 @@ template <typename T, typename Tag> struct StrongTypedef
   explicit StrongTypedef(const T &v) : value(v) {}
   StrongTypedef() = default;
 
-  bool operator==(const StrongTypedef &other) const
+  auto operator==(const StrongTypedef &other) const -> bool
   {
     return value == other.value;
   }
-  bool operator!=(const StrongTypedef &other) const
+  auto operator!=(const StrongTypedef &other) const -> bool
   {
     return value != other.value;
   }
-  bool operator<(const StrongTypedef &other) const
+  auto operator<(const StrongTypedef &other) const -> bool
   {
     return value < other.value;
   }

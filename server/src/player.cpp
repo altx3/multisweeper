@@ -1,13 +1,15 @@
 #include "player.hpp"
 
-Player::Player(const player_id_t &id) : id_(id), lobby_id_("") {}
+#include <utility>
 
-const player_id_t &Player::get_id() const
+Player::Player(player_id_t id) : id_(std::move(id)), lobby_id_("") {}
+
+auto Player::get_id() const -> const player_id_t &
 {
   return id_;
 }
 
-const lobby_id_t &Player::get_lobby_id() const
+auto Player::get_lobby_id() const -> const lobby_id_t &
 {
   return lobby_id_;
 }

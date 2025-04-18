@@ -12,15 +12,15 @@ using json = nlohmann::json;
 class Lobby
 {
 public:
-  Lobby(const lobby_id_t &id, const player_id_t &host_id);
+  Lobby(lobby_id_t id, const player_id_t &host_id);
 
-  const lobby_id_t &get_id() const;
-  const player_id_t &get_host_id() const;
+  [[nodiscard]] auto get_id() const -> const lobby_id_t &;
+  [[nodiscard]] auto get_host_id() const -> const player_id_t &;
 
   void add_player(const player_id_t &player_id);
   void remove_player(const player_id_t &player_id);
 
-  json get_state() const;
+  [[nodiscard]] auto get_state() const -> json;
 
 private:
   lobby_id_t id_;

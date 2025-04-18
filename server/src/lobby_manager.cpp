@@ -2,7 +2,7 @@
 
 #include "lobby_manager.hpp"
 
-lobby_id_t generate_random_id(const std::string &prefix)
+auto generate_random_id(const std::string &prefix) -> lobby_id_t
 {
   static std::random_device rd;
   static std::mt19937 gen(rd());
@@ -12,15 +12,15 @@ lobby_id_t generate_random_id(const std::string &prefix)
   return lobby_id;
 }
 
-lobby_id_t LobbyManager::create_lobby(const player_id_t &host_id)
+auto LobbyManager::create_lobby(const player_id_t &host_id) -> lobby_id_t
 {
   lobby_id_t lobby_id = generate_random_id("lobby_");
   lobbies_.emplace(lobby_id, Lobby(lobby_id, host_id));
   return lobby_id;
 }
 
-bool LobbyManager::join_lobby(const lobby_id_t &lobby_id,
-                              const player_id_t &player_id)
+auto LobbyManager::join_lobby(const lobby_id_t &lobby_id,
+                              const player_id_t &player_id) -> bool
 {
   auto it = lobbies_.find(lobby_id);
   if (it != lobbies_.end())
@@ -45,7 +45,7 @@ void LobbyManager::leave_lobby(const lobby_id_t &lobby_id,
   }
 }
 
-Lobby *LobbyManager::get_lobby(const lobby_id_t &lobby_id)
+auto LobbyManager::get_lobby(const lobby_id_t &lobby_id) -> Lobby *
 {
   auto it = lobbies_.find(lobby_id);
   if (it != lobbies_.end())

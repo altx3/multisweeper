@@ -1,17 +1,19 @@
 #include "lobby.hpp"
 
-Lobby::Lobby(const lobby_id_t &id, const player_id_t &host_id)
-    : id_(id), host_id_(host_id)
+#include <utility>
+
+Lobby::Lobby(lobby_id_t id, const player_id_t &host_id)
+    : id_(std::move(id)), host_id_(host_id)
 {
   player_ids_.push_back(host_id);
 }
 
-const lobby_id_t &Lobby::get_id() const
+auto Lobby::get_id() const -> const lobby_id_t &
 {
   return id_;
 }
 
-const player_id_t &Lobby::get_host_id() const
+auto Lobby::get_host_id() const -> const player_id_t &
 {
   return host_id_;
 }
@@ -28,7 +30,7 @@ void Lobby::remove_player(const player_id_t &player_id)
     player_ids_.end());
 }
 
-json Lobby::get_state() const
+auto Lobby::get_state() const -> json
 {
   return {{"lobby_id", id_}, {"host_id", host_id_}, {"players", player_ids_}};
 }

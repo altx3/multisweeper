@@ -20,6 +20,7 @@
   "C_Cpp.default.compileCommands": "${workspaceFolder}/server/build/compile_commands.json",
   "C_Cpp.default.intelliSenseMode": "gcc-x86",
   "C_Cpp.autoAddFileAssociations": false,
+  "C_Cpp.codeAnalysis.clangTidy.enabled": false,
 
   "mesonbuild.configureOnOpen": false
 }

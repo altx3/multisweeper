@@ -7,10 +7,10 @@
 class Player
 {
 public:
-  Player(const player_id_t &id);
+  Player(player_id_t id);
 
-  const player_id_t &get_id() const;
-  const lobby_id_t &get_lobby_id() const;
+  [[nodiscard]] auto get_id() const -> const player_id_t &;
+  [[nodiscard]] auto get_lobby_id() const -> const lobby_id_t &;
 
   void set_lobby_id(const lobby_id_t &lobby_id);
   void leave_lobby();
