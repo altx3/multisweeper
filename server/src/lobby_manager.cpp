@@ -1,20 +1,8 @@
-#include <random>
-
 #include "lobby_manager.hpp"
-
-auto generate_random_id(const std::string &prefix) -> lobby_id_t
-{
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  static std::uniform_int_distribution<> dis(1000, 9999);
-
-  lobby_id_t lobby_id(prefix + std::to_string(dis(gen)));
-  return lobby_id;
-}
 
 auto LobbyManager::create_lobby(const player_id_t &host_id) -> lobby_id_t
 {
-  lobby_id_t lobby_id = generate_random_id("lobby_");
+  lobby_id_t lobby_id = generate_random_id<lobby_id_t>("lobby_");
   lobbies_.emplace(lobby_id, Lobby(lobby_id, host_id));
   return lobby_id;
 }

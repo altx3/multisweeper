@@ -13,11 +13,13 @@ nlohmann_json_dep = dependency('nlohmann_json')
 inc = include_directories('include')
 
 src = [
+    'src/http_handler.cpp',
     'src/lobby_manager.cpp',
     'src/lobby.cpp',
     'src/logger.cpp',
     'src/main.cpp',
-    'src/player.cpp'
+    'src/player.cpp',
+    'src/websocket_handler.cpp'
 ]
 
 executable('multisweeper-server', src,
