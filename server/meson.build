@@ -13,6 +13,7 @@ nlohmann_json_dep = dependency('nlohmann_json')
 inc = include_directories('include')
 
 src = [
+    'src/lobby_manager.cpp',
     'src/lobby.cpp',
     'src/logger.cpp',
     'src/main.cpp',
