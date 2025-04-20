@@ -22,5 +22,11 @@
   "C_Cpp.autoAddFileAssociations": false,
   "C_Cpp.codeAnalysis.clangTidy.enabled": false,
 
-  "mesonbuild.configureOnOpen": false
+  "mesonbuild.configureOnOpen": false,
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  }
 }
