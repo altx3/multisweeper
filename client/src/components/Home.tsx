@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import SimpleWebSocketClient from './SimpleWebSocketClient';
+import LobbyManager from './LobbyManager';
 
 function Home() {
   return (
@@ -17,7 +17,7 @@ function Home() {
         <Typography variant="h4" gutterBottom>
           Multisweeper++
         </Typography>
-        <SimpleWebSocketClient />
+        <LobbyManager />
       </Box>
     </Box>
   );

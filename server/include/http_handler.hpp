@@ -1,5 +1,4 @@
-#ifndef HTTP_HANDLER_HPP
-#define HTTP_HANDLER_HPP
+#pragma once
 
 #include <App.h>
 
@@ -15,9 +14,8 @@ private:
   void handle_create_lobby(uWS::HttpResponse<false> *res,
                            uWS::HttpRequest *req);
   void handle_join_lobby(uWS::HttpResponse<false> *res, uWS::HttpRequest *req);
+  void add_cors_headers(uWS::HttpResponse<false> *res);
 
   LobbyManager *lobby_manager_;
   uWS::App *app_;
 };
-
-#endif

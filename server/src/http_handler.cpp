@@ -4,17 +4,58 @@
 
 using json = nlohmann::json;
 
+constexpr auto CLIENT_URL = "http://localhost:5173";
+
 HTTPHandler::HTTPHandler(LobbyManager *lobby_manager, uWS::App *app)
     : lobby_manager_(lobby_manager), app_(app)
 {
 }
 
+void HTTPHandler::add_cors_headers(uWS::HttpResponse<false> *res)
+{
+  res->writeHeader("Access-Control-Allow-Origin", CLIENT_URL);
+  res->writeHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res->writeHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
 void HTTPHandler::register_routes()
 {
+
+  app_->options(
+    "/lobbies",
+    [](auto *res, auto *req)
+    {
+      res->writeStatus("200 OK");
+      res->writeHeader("Access-Control-Allow-Origin", CLIENT_URL);
+      res->writeHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res->writeHeader("Access-Control-Allow-Headers", "Content-Type");
+      res->end();
+    });
+
+  app_->options(
+    "/lobbies/:lobby_id/join",
+    [](auto *res, auto *req)
+    {
+      res->writeStatus("200 OK");
+      res->writeHeader("Access-Control-Allow-Origin", CLIENT_URL);
+      res->writeHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res->writeHeader("Access-Control-Allow-Headers", "Content-Type");
+      res->end();
+    });
+
   app_->post("/lobbies",
-             [this](auto *res, auto *req) { handle_create_lobby(res, req); });
+             [this](auto *res, auto *req)
+             {
+               add_cors_headers(res);
+               handle_create_lobby(res, req);
+             });
   app_->post("/lobbies/:lobby_id/join",
-             [this](auto *res, auto *req) { handle_join_lobby(res, req); });
+
+             [this](auto *res, auto *req)
+             {
+               add_cors_headers(res);
+               handle_join_lobby(res, req);
+             });
 }
 
 void HTTPHandler::handle_create_lobby(uWS::HttpResponse<false> *res,
