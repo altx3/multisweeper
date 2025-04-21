@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useState, useEffect } from "react";
+import useWebSocket from "react-use-websocket";
 
 const createLobby = async () => {
   try {
-    const url = import.meta.env.VITE_SERVER_HTTP_URL + 'lobbies';
+    const url = import.meta.env.VITE_SERVER_HTTP_URL + "lobbies";
     const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         /* lobby data, e.g., name */
       }),
     });
-    if (!response.ok) throw new Error('Failed to create lobby');
+    if (!response.ok) throw new Error("Failed to create lobby");
     return await response.json(); // Returns { id: string, name: string }
   } catch (error) {
-    console.error('Error creating lobby:', error);
+    console.error("Error creating lobby:", error);
     throw error;
   }
 };
@@ -24,24 +24,24 @@ const joinLobby = async (lobbyId: string) => {
     const response = await fetch(
       `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/${lobbyId}/join`,
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           /* join data, e.g., user info */
         }),
       }
     );
-    if (!response.ok) throw new Error('Failed to join lobby');
+    if (!response.ok) throw new Error("Failed to join lobby");
     return await response.json(); // Returns lobby details
   } catch (error) {
-    console.error('Error joining lobby:', error);
+    console.error("Error joining lobby:", error);
     throw error;
   }
 };
 
 const LobbyManager = () => {
   const [lobbyId, setLobbyId] = useState<string | null>(null);
-  const [inputLobbyId, setInputLobbyId] = useState('');
+  const [inputLobbyId, setInputLobbyId] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   // WebSocket setup
@@ -63,7 +63,7 @@ const LobbyManager = () => {
       const data = await createLobby();
       setLobbyId(data.id);
     } catch (err) {
-      setError('Failed to create lobby');
+      setError("Failed to create lobby");
     }
   };
 
@@ -74,7 +74,7 @@ const LobbyManager = () => {
       await joinLobby(inputLobbyId);
       setLobbyId(inputLobbyId);
     } catch (err) {
-      setError('Failed to join lobby');
+      setError("Failed to join lobby");
     }
   };
 
@@ -98,7 +98,7 @@ const LobbyManager = () => {
             />
             <button onClick={handleJoinLobby}>Join Lobby</button>
           </div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
       ) : (
         <div>
@@ -109,7 +109,7 @@ const LobbyManager = () => {
               <li key={index}>{msg}</li>
             ))}
           </ul>
-          <button onClick={() => handleSendMessage('Hello!')}>
+          <button onClick={() => handleSendMessage("Hello!")}>
             Send Hello
           </button>
           <button onClick={() => setLobbyId(null)}>Leave Lobby</button>

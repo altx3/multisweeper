@@ -23,10 +23,8 @@
   "C_Cpp.codeAnalysis.clangTidy.enabled": false,
 
   "mesonbuild.configureOnOpen": false,
-  "github.copilot.enable": {
-    "*": false,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false
-  }
+
+  // Client
+  "typescript.preferences.quoteStyle": "double",
+  "javascript.preferences.quoteStyle": "double"
 }
