@@ -3,6 +3,8 @@
 #include "logger.hpp"
 #include "websocket_handler.hpp"
 
+#include <iostream>
+
 using json = nlohmann::json;
 
 WebSocketHandler::WebSocketHandler(LobbyManager *lobby_manager, uWS::App *app)
@@ -31,66 +33,55 @@ void WebSocketHandler::on_message(
   uWS::WebSocket<false, true, WebSocketData> *ws, std::string_view message,
   uWS::OpCode op_code)
 {
+  auto *ws_data = ws->getUserData();
   try
   {
-    json data = json::parse(message);
-    auto *ws_data = ws->getUserData();
-
-    if (data["type"] == "subscribe")
+    json j = json::parse(message);
+    if (j["type"] == "init")
     {
-      lobby_id_t const lobby_id(data["lobby_id"]);
-      player_id_t const player_id(data["player_id"]);
-      if (lobby_manager_->get_lobby(lobby_id) != nullptr)
-      {
-        ws_data->player_id = player_id;
-        ws_data->lobby_id = lobby_id;
-        connections_[player_id] = ws;
-        json const state = lobby_manager_->get_lobby(lobby_id)->get_state();
-        ws->send(state.dump(), op_code);
-        Logger::log("Player " + player_id.value + " subscribed to lobby " +
-                    lobby_id.value);
-      }
-      else
-      {
-        json const error = {{"type", "error"}, {"message", "Lobby not found"}};
-        ws->send(error.dump(), op_code);
-      }
+      ws_data->lobby_id = lobby_id_t(j["lobbyId"].get<std::string>());
+      ws_data->player_id = player_id_t(j["playerId"].get<std::string>());
+      Logger::log(
+        "Initialized ws_data - lobby_id: " + std::string(ws_data->lobby_id) +
+        ", player_id: " + std::string(ws_data->player_id));
+      connections_[ws_data->player_id] = ws;
     }
-    else if (data["type"] == "player_update")
+    else if (j["type"] == "initDirect")
     {
-      // Broadcast player data (e.g., location, name, ID) to other players in
-      // the lobby
-      lobby_id_t const lobby_id(ws_data->lobby_id);
-      if (Lobby *lobby = lobby_manager_->get_lobby(lobby_id))
-      {
-        for (const auto &pid : lobby->get_state()["players"])
-        {
-          if (pid != ws_data->player_id &&
-              connections_.find(pid) != connections_.end())
-          {
-            connections_[pid]->send(message, op_code);
-          }
-        }
-      }
+      ws_data->lobby_id = lobby_id_t(j["lobbyId"].get<std::string>());
+      ws_data->player_id = player_id_t(j["newPlayerId"].get<std::string>());
+      Logger::log(
+        "Initialized ws_data - lobby_id: " + std::string(ws_data->lobby_id) +
+        ", player_id: " + std::string(ws_data->player_id));
+      connections_[ws_data->player_id] = ws;
     }
   }
-  catch (const json::exception &e)
+  catch (const std::exception &e)
   {
-    Logger::log("JSON parse error: " + std::string(e.what()));
+    Logger::log(std::string(message));
+    Logger::log("Error parsing message: " + std::string(e.what()));
   }
 }
 
 void WebSocketHandler::on_close(uWS::WebSocket<false, true, WebSocketData> *ws,
-                                int code [[maybe_unused]],
-                                std::string_view reason [[maybe_unused]])
+                                int code, std::string_view reason)
 {
   auto *ws_data = ws->getUserData();
-  if (!ws_data->lobby_id.empty())
+  Logger::log("on_close - lobby_id: " + std::string(ws_data->lobby_id) +
+              ", player_id: " + std::string(ws_data->player_id));
+  if (!ws_data->lobby_id.empty() && !ws_data->player_id.empty())
   {
-    lobby_id_t const lobby_id(ws_data->lobby_id);
-    player_id_t const player_id(ws_data->player_id);
-    lobby_manager_->leave_lobby(lobby_id, player_id);
+    lobby_manager_->leave_lobby(ws_data->lobby_id, ws_data->player_id);
     connections_.erase(ws_data->player_id);
-    Logger::log("Player " + ws_data->player_id.value + " disconnected");
+    Logger::log("Player " + std::string(ws_data->player_id) + " disconnected");
+    // Notify other players
+    ws->publish(
+      "lobby:" + std::string(ws_data->lobby_id),
+      json{{"type", "player_left"}, {"player_id", ws_data->player_id.value}}
+        .dump());
+  }
+  else
+  {
+    Logger::log("Warning: Incomplete ws_data in on_close");
   }
 }

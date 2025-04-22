@@ -1,11 +1,12 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import useWebSocket from "react-use-websocket";
-import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { CreateLobbyResponse } from "../types/typings";
+import { getErrorMessage } from "../utils/utils";
 
 const createLobby = async () => {
   try {
-    const url = import.meta.env.VITE_SERVER_HTTP_URL + "lobbies";
+    const url = import.meta.env.VITE_SERVER_HTTP_URL + "lobbies/create";
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -24,7 +25,7 @@ const createLobby = async () => {
 const joinLobby = async (lobbyId: string) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/${lobbyId}/join`,
+      `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/join/${lobbyId}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,8 +34,13 @@ const joinLobby = async (lobbyId: string) => {
         }),
       }
     );
-    if (!response.ok) throw new Error("Failed to join lobby");
-    return await response.json(); // Returns lobby details
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("Lobby does not exist");
+      }
+      throw new Error("Failed to join lobby");
+    }
+    return await response.json();
   } catch (error) {
     console.error("Error joining lobby:", error);
     throw error;
@@ -42,16 +48,17 @@ const joinLobby = async (lobbyId: string) => {
 };
 
 const LobbyManager = () => {
-  const [response, setResponse] = useState<CreateLobbyResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [lobbyCode, setLobbyCode] = useState<string>("");
+  const [enterLobbyCode, setEnterLobbyCode] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleCreateLobby = async () => {
     try {
       setError(null);
       const data: CreateLobbyResponse = await createLobby();
-      setResponse(data);
-    } catch (err) {
+      sessionStorage.setItem("player_id", data.player_id);
+      navigate(`/lobby/${data.lobby_id}`);
+    } catch (error) {
       setError("Failed to create lobby");
     }
   };
@@ -59,9 +66,11 @@ const LobbyManager = () => {
   const handleJoinLobby = async () => {
     try {
       setError(null);
-      await joinLobby(lobbyCode);
-    } catch (err) {
-      setError("Failed to join lobby");
+      const data: CreateLobbyResponse = await joinLobby(enterLobbyCode);
+      sessionStorage.setItem("player_id", data.player_id);
+      navigate(`/lobby/${data.lobby_id}`);
+    } catch (error) {
+      setError(getErrorMessage(error));
     }
   };
 
@@ -72,11 +81,6 @@ const LobbyManager = () => {
       <Button variant="contained" onClick={handleCreateLobby}>
         Create Lobby
       </Button>
-      {response && (
-        <Typography variant="body1" color="text.primary">
-          Lobby ID: {response.lobby_id}
-        </Typography>
-      )}
       {error && (
         <Typography variant="body1" color="Red">
           {error}
@@ -85,8 +89,8 @@ const LobbyManager = () => {
       <TextField
         label="Enter lobby code"
         variant="filled"
-        value={lobbyCode}
-        onChange={(e) => setLobbyCode(e.target.value)}
+        value={enterLobbyCode}
+        onChange={(e) => setEnterLobbyCode(e.target.value)}
         sx={{
           "& .MuiInput-input": {
             color: "text.primary",

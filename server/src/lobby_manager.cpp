@@ -1,11 +1,10 @@
 #include "lobby_manager.hpp"
+#include "logger.hpp"
 
 auto LobbyManager::create_lobby(const player_id_t &host_id) -> lobby_id_t
 {
   auto lobby_id = generate_random_id<lobby_id_t>("lobby_");
-  Lobby lobby(lobby_id, host_id);
-  lobby.add_player(host_id);
-  lobbies_.emplace(lobby_id, lobby);
+  lobbies_.emplace(lobby_id, Lobby(lobby_id, host_id));
   return lobby_id;
 }
 
@@ -31,6 +30,7 @@ void LobbyManager::leave_lobby(const lobby_id_t &lobby_id,
     if (it->second.get_state()["players"].empty())
     {
       lobbies_.erase(it);
+      Logger::log("deleting lobby" + static_cast<std::string>(lobby_id));
     }
   }
 }
@@ -43,4 +43,9 @@ auto LobbyManager::get_lobby(const lobby_id_t &lobby_id) -> Lobby *
     return &it->second;
   }
   return nullptr;
+}
+
+bool LobbyManager::lobby_exists(lobby_id_t lobby_id)
+{
+  return lobbies_.find(lobby_id) != lobbies_.end();
 }

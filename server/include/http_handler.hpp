@@ -14,6 +14,7 @@ private:
   void handle_create_lobby(uWS::HttpResponse<false> *res,
                            uWS::HttpRequest *req);
   void handle_join_lobby(uWS::HttpResponse<false> *res, uWS::HttpRequest *req);
+  void handle_get_lobby(uWS::HttpResponse<false> *res, uWS::HttpRequest *req);
   void add_cors_headers(uWS::HttpResponse<false> *res);
 
   LobbyManager *lobby_manager_;
