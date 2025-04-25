@@ -45,6 +45,11 @@ auto LobbyManager::get_lobby(const lobby_id_t &lobby_id) -> Lobby *
   return nullptr;
 }
 
+auto LobbyManager::get_lobbies() -> const std::map<lobby_id_t, Lobby> &
+{
+  return lobbies_;
+}
+
 bool LobbyManager::lobby_exists(lobby_id_t lobby_id)
 {
   return lobbies_.find(lobby_id) != lobbies_.end();

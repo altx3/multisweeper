@@ -12,6 +12,7 @@ public:
     -> bool;
   void leave_lobby(const lobby_id_t &lobby_id, const player_id_t &player_id);
   auto get_lobby(const lobby_id_t &lobby_id) -> Lobby *;
+  auto get_lobbies() -> const std::map<lobby_id_t, Lobby> &;
   bool lobby_exists(lobby_id_t lobby_id);
 
 private:

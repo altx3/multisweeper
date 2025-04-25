@@ -19,6 +19,7 @@ src = [
     'src/logger.cpp',
     'src/main.cpp',
     'src/player.cpp',
+    'src/uuid.cpp',
     'src/websocket_handler.cpp'
 ]
 

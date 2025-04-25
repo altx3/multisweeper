@@ -3,17 +3,12 @@
 #include <random>
 #include <string>
 
-constexpr int MIN_ID = 1000;
-constexpr int MAX_ID = 9999;
+#include "uuid.hpp"
 
 template <typename IdType>
 auto generate_random_id(const std::string &prefix) -> IdType
 {
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  static std::uniform_int_distribution<> dis(MIN_ID, MAX_ID);
-
-  return IdType(prefix + std::to_string(dis(gen)));
+  return IdType(prefix + generate_uuid_v4());
 }
 
 template <typename T, typename Tag> struct StrongTypedef

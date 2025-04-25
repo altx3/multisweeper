@@ -46,15 +46,6 @@ void WebSocketHandler::on_message(
         ", player_id: " + std::string(ws_data->player_id));
       connections_[ws_data->player_id] = ws;
     }
-    else if (j["type"] == "initDirect")
-    {
-      ws_data->lobby_id = lobby_id_t(j["lobbyId"].get<std::string>());
-      ws_data->player_id = player_id_t(j["newPlayerId"].get<std::string>());
-      Logger::log(
-        "Initialized ws_data - lobby_id: " + std::string(ws_data->lobby_id) +
-        ", player_id: " + std::string(ws_data->player_id));
-      connections_[ws_data->player_id] = ws;
-    }
   }
   catch (const std::exception &e)
   {
@@ -74,11 +65,6 @@ void WebSocketHandler::on_close(uWS::WebSocket<false, true, WebSocketData> *ws,
     lobby_manager_->leave_lobby(ws_data->lobby_id, ws_data->player_id);
     connections_.erase(ws_data->player_id);
     Logger::log("Player " + std::string(ws_data->player_id) + " disconnected");
-    // Notify other players
-    ws->publish(
-      "lobby:" + std::string(ws_data->lobby_id),
-      json{{"type", "player_left"}, {"player_id", ws_data->player_id.value}}
-        .dump());
   }
   else
   {

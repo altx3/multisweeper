@@ -9,8 +9,6 @@ HTTPHandler::HTTPHandler(LobbyManager *lobby_manager, uWS::App *app)
     : lobby_manager_(lobby_manager), app_(app)
 {
 }
-
-// will write 200 OK look in the writeHeader function
 void HTTPHandler::add_cors_headers(uWS::HttpResponse<false> *res)
 {
   res->writeHeader("Access-Control-Allow-Origin", CLIENT_URL);
@@ -20,6 +18,7 @@ void HTTPHandler::add_cors_headers(uWS::HttpResponse<false> *res)
 
 void HTTPHandler::register_routes()
 {
+  // cors stuff
   app_->options("/lobbies/create",
                 [this](auto *res, auto *req)
                 {
@@ -41,14 +40,28 @@ void HTTPHandler::register_routes()
                   res->end();
                 });
 
+  app_->options("/lobbies",
+                [this](auto *res, auto *req)
+                {
+                  add_cors_headers(res);
+                  res->end();
+                });
+
+  // create a lobby
   app_->post("/lobbies/create",
              [this](auto *res, auto *req) { handle_create_lobby(res, req); });
 
-  app_->post("/lobbies/join/:lobby_id",
+  // join a lobby from an id
+  app_->post("/lobbies/:lobby_id/join",
              [this](auto *res, auto *req) { handle_join_lobby(res, req); });
 
+  // check if a lobby exist if you directly enter the id
   app_->get("/lobbies/:lobby_id",
             [this](auto *res, auto *req) { handle_get_lobby(res, req); });
+
+  // get a list of all lobbies
+  app_->get("/lobbies",
+            [this](auto *res, auto *req) { handle_get_lobbies(res, req); });
 }
 
 void HTTPHandler::handle_create_lobby(uWS::HttpResponse<false> *res,
@@ -96,4 +109,21 @@ void HTTPHandler::handle_get_lobby(uWS::HttpResponse<false> *res,
     add_cors_headers(res);
     res->end(json{{"error", "Lobby not found"}}.dump());
   }
+}
+
+void HTTPHandler::handle_get_lobbies(uWS::HttpResponse<false> *res,
+                                     uWS::HttpRequest *req)
+{
+  const auto &lobbies = lobby_manager_->get_lobbies();
+  nlohmann::json json_lobbies = nlohmann::json::array();
+  for (const auto &[id, lobby] : lobbies)
+  {
+    json_lobbies.push_back(lobby.get_state());
+  }
+
+  nlohmann::json response = {{"lobbies", json_lobbies}};
+
+  res->writeStatus("200 OK");
+  add_cors_headers(res);
+  res->end(response.dump());
 }
