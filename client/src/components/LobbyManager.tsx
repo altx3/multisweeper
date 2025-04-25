@@ -25,7 +25,7 @@ const createLobby = async () => {
 const joinLobby = async (lobbyId: string) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/join/${lobbyId}`,
+      `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/${lobbyId}/join`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

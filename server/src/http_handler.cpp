@@ -26,7 +26,7 @@ void HTTPHandler::register_routes()
                   res->end();
                 });
 
-  app_->options("/lobbies/join/:lobby_id",
+  app_->options("/lobbies/:lobby_id/join",
                 [this](auto *res, auto *req)
                 {
                   add_cors_headers(res);
