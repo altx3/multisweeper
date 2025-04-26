@@ -23,15 +23,15 @@ void WebSocketHandler::register_routes()
      { on_close(ws, code, reason); }});
 }
 
-void WebSocketHandler::on_open(uWS::WebSocket<false, true, WebSocketData> *ws
-                               [[maybe_unused]])
+void WebSocketHandler::on_open(
+  [[maybe_unused]] uWS::WebSocket<false, true, WebSocketData> *ws)
 {
   Logger::log("WebSocket connection opened");
 }
 
 void WebSocketHandler::on_message(
   uWS::WebSocket<false, true, WebSocketData> *ws, std::string_view message,
-  uWS::OpCode op_code)
+  [[maybe_unused]] uWS::OpCode op_code)
 {
   auto *ws_data = ws->getUserData();
   try
@@ -55,16 +55,16 @@ void WebSocketHandler::on_message(
 }
 
 void WebSocketHandler::on_close(uWS::WebSocket<false, true, WebSocketData> *ws,
-                                int code, std::string_view reason)
+                                [[maybe_unused]] int code,
+                                [[maybe_unused]] std::string_view reason)
 {
   auto *ws_data = ws->getUserData();
-  Logger::log("on_close - lobby_id: " + std::string(ws_data->lobby_id) +
-              ", player_id: " + std::string(ws_data->player_id));
   if (!ws_data->lobby_id.empty() && !ws_data->player_id.empty())
   {
+    Logger::log("Player: " + std::string(ws_data->player_id) +
+                " disconnected from Lobby: " + std::string(ws_data->lobby_id));
     lobby_manager_->leave_lobby(ws_data->lobby_id, ws_data->player_id);
     connections_.erase(ws_data->player_id);
-    Logger::log("Player " + std::string(ws_data->player_id) + " disconnected");
   }
   else
   {

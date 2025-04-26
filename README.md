@@ -54,6 +54,11 @@ Documention and testing later x3
 6. Navigate to `server/`.
 7. Just hit that sick task `Run server` in vscode
 
+### Developer
+
+1. Install clang-tidy and clang-format with MSYS2 with `pacman -S mingw-w64-x86_64-clang-tools-extra`
+2. Documention and testing later x3
+
 ## Frontend (React)
 
 ### Requirements

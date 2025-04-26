@@ -9,6 +9,7 @@ HTTPHandler::HTTPHandler(LobbyManager *lobby_manager, uWS::App *app)
     : lobby_manager_(lobby_manager), app_(app)
 {
 }
+
 void HTTPHandler::add_cors_headers(uWS::HttpResponse<false> *res)
 {
   res->writeHeader("Access-Control-Allow-Origin", CLIENT_URL);
@@ -20,30 +21,30 @@ void HTTPHandler::register_routes()
 {
   // cors stuff
   app_->options("/lobbies/create",
-                [this](auto *res, auto *req)
+                [this](auto *res, [[maybe_unused]] auto *req)
                 {
-                  add_cors_headers(res);
+                  HTTPHandler::add_cors_headers(res);
                   res->end();
                 });
 
   app_->options("/lobbies/:lobby_id/join",
-                [this](auto *res, auto *req)
+                [this](auto *res, [[maybe_unused]] auto *req)
                 {
-                  add_cors_headers(res);
+                  HTTPHandler::add_cors_headers(res);
                   res->end();
                 });
 
   app_->options("/lobbies/:lobby_id",
-                [this](auto *res, auto *req)
+                [this](auto *res, [[maybe_unused]] auto *req)
                 {
-                  add_cors_headers(res);
+                  HTTPHandler::add_cors_headers(res);
                   res->end();
                 });
 
   app_->options("/lobbies",
-                [this](auto *res, auto *req)
+                [this](auto *res, [[maybe_unused]] auto *req)
                 {
-                  add_cors_headers(res);
+                  HTTPHandler::add_cors_headers(res);
                   res->end();
                 });
 
@@ -65,12 +66,12 @@ void HTTPHandler::register_routes()
 }
 
 void HTTPHandler::handle_create_lobby(uWS::HttpResponse<false> *res,
-                                      uWS::HttpRequest *req [[maybe_unused]])
+                                      [[maybe_unused]] uWS::HttpRequest *req)
 {
   auto host_id = generate_random_id<player_id_t>("player_");
   lobby_id_t lobby_id = lobby_manager_->create_lobby(host_id);
   res->writeStatus("201 Created");
-  add_cors_headers(res);
+  HTTPHandler::add_cors_headers(res);
   res->end(json{{"lobby_id", lobby_id}, {"player_id", host_id}}.dump());
 }
 
@@ -82,13 +83,13 @@ void HTTPHandler::handle_join_lobby(uWS::HttpResponse<false> *res,
   if (lobby_manager_->join_lobby(lobby_id, player_id))
   {
     res->writeStatus("200 OK");
-    add_cors_headers(res);
+    HTTPHandler::add_cors_headers(res);
     res->end(json{{"lobby_id", lobby_id}, {"player_id", player_id}}.dump());
   }
   else
   {
     res->writeStatus("404 Not Found");
-    add_cors_headers(res);
+    HTTPHandler::add_cors_headers(res);
     res->end(json{{"error", "Lobby not found"}}.dump());
   }
 }
@@ -97,22 +98,22 @@ void HTTPHandler::handle_get_lobby(uWS::HttpResponse<false> *res,
                                    uWS::HttpRequest *req)
 {
   lobby_id_t const lobby_id(std::string(req->getParameter("lobby_id")));
-  if (lobby_manager_->lobby_exists(lobby_id))
+  if (lobby_manager_->get_lobby(lobby_id) != nullptr)
   {
     res->writeStatus("200 OK");
-    add_cors_headers(res);
+    HTTPHandler::add_cors_headers(res);
     res->end(json{{"lobby_id", lobby_id}}.dump());
   }
   else
   {
     res->writeStatus("404 Not Found");
-    add_cors_headers(res);
+    HTTPHandler::add_cors_headers(res);
     res->end(json{{"error", "Lobby not found"}}.dump());
   }
 }
 
 void HTTPHandler::handle_get_lobbies(uWS::HttpResponse<false> *res,
-                                     uWS::HttpRequest *req)
+                                     [[maybe_unused]] uWS::HttpRequest *req)
 {
   const auto &lobbies = lobby_manager_->get_lobbies();
   nlohmann::json json_lobbies = nlohmann::json::array();
@@ -121,9 +122,9 @@ void HTTPHandler::handle_get_lobbies(uWS::HttpResponse<false> *res,
     json_lobbies.push_back(lobby.get_state());
   }
 
-  nlohmann::json response = {{"lobbies", json_lobbies}};
+  const nlohmann::json response = {{"lobbies", json_lobbies}};
 
   res->writeStatus("200 OK");
-  add_cors_headers(res);
+  HTTPHandler::add_cors_headers(res);
   res->end(response.dump());
 }
