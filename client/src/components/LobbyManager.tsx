@@ -59,7 +59,7 @@ const LobbyManager = () => {
       sessionStorage.setItem("player_id", data.player_id);
       navigate(`/lobby/${data.lobby_id}`);
     } catch (error) {
-      setError("Failed to create lobby");
+      setError(getErrorMessage(error));
     }
   };
 

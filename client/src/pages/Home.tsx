@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import DefaultBox from "../components/common/DefaultBox";
 import LobbyManager from "../components/LobbyManager";
+import mascot from "../assets/multisweeper_mascot.png";
 
 function Home() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function Home() {
       </DefaultBox>
       <Box
         component="img"
-        src="../../public/Multisweeper_mascot.png"
+        src={mascot}
         alt="decorative image"
         sx={{
           position: "fixed",

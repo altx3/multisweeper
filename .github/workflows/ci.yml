@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -9,6 +12,7 @@ jobs:
   check-pr-title:
     name: Check pull request title
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - name: Get latest PR title via GitHub API
         id: prtitle
@@ -31,8 +35,8 @@ jobs:
             echo "✅ PR title is valid: $PR_TITLE"
           fi
 
-  backend-build-and-format:
-    name: Backend Build and Format
+  backend-build-lint-format:
+    name: Backend Build, lint and Format
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -58,6 +62,11 @@ jobs:
           find src include -name '*.cpp' -o -name '*.h' | xargs clang-format -n --Werror --style=file
         env:
           CLANG_FORMAT_STYLE: file
+
+      - name: Lint C++
+        run: |
+          cd server
+          find src include -type f \( -name '*.cpp' -o -name '*.hpp' \) -print0 | xargs -0 -P$(nproc) -I{} clang-tidy -p build {} -- -Iinclude
 
       - name: Configure Meson
         run: |
