@@ -39,8 +39,8 @@ void WebSocketHandler::on_message(
     json j = json::parse(message);
     if (j["type"] == "init")
     {
-      ws_data->lobby_id = lobby_id_t(j["lobbyId"].get<std::string>());
-      ws_data->player_id = player_id_t(j["playerId"].get<std::string>());
+      ws_data->lobby_id = lobby_id_t(j["lobby_id"].get<std::string>());
+      ws_data->player_id = player_id_t(j["player_id"].get<std::string>());
       Logger::log(
         "Initialized ws_data - lobby_id: " + std::string(ws_data->lobby_id) +
         ", player_id: " + std::string(ws_data->player_id));

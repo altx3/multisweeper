@@ -12,6 +12,8 @@ public:
 
 private:
   static void add_cors_headers(uWS::HttpResponse<false> *res);
+  static void handle_create_user(uWS::HttpResponse<false> *res,
+                                 uWS::HttpRequest *req);
   void handle_create_lobby(uWS::HttpResponse<false> *res,
                            uWS::HttpRequest *req);
   void handle_join_lobby(uWS::HttpResponse<false> *res, uWS::HttpRequest *req);

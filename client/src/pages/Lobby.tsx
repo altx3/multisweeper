@@ -1,71 +1,138 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import { Button, Typography } from "@mui/material";
 import DefaultBox from "../components/common/DefaultBox";
 
 import { CreateLobbyResponse } from "../types/typings";
-
-const checkLobbyExists = async (lobbyId: string) => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/${lobbyId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Lobby does not exist");
-      }
-      throw new Error("Failed to check lobby");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error checking lobby:", error);
-    throw error;
-  }
-};
-
-// New function to join the lobby
-const joinLobby = async (lobbyId: string) => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_HTTP_URL}lobbies/${lobbyId}/join`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lobby_id: lobbyId }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to join lobby: " + response.status);
-    }
-    const data: CreateLobbyResponse = await response.json(); // { player_id: "player_123" }
-    sessionStorage.setItem("player_id", data.player_id); // Store in sessionStorage
-    return data.player_id;
-  } catch (error) {
-    console.error("Error joining lobby:", error);
-    throw error;
-  }
-};
+import { useUser } from "../contexts/UserContext";
 
 const Lobby = () => {
-  const { lobbyId } = useParams<{ lobbyId: string }>();
   const navigate = useNavigate();
+  const hasJoinedRef = useRef(false);
+  const isMountedRef = useRef(true);
+  const isLeavingRef = useRef(false);
+  const { user, setUser } = useUser();
+  const { lobbyId } = useParams<{ lobbyId: string }>();
   const [isValidLobby, setIsValidLobby] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [playerId, setPlayerId] = useState<string | null>(
-    sessionStorage.getItem("player_id")
+
+  const checkLobbyExists = async (lobbyId: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_HTTP_URL}/lobbies/${lobbyId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Lobby does not exist");
+        }
+        throw new Error("Failed to check lobby");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error checking lobby:", error);
+      throw error;
+    }
+  };
+
+  const joinLobby = async (lobbyId: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_HTTP_URL}/lobbies/${lobbyId}/join`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lobby_id: lobbyId,
+            player_id: user.player_id,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to join lobby: " + response.status);
+      }
+      const data: CreateLobbyResponse = await response.json();
+      const updatedUser = { ...user, lobby_id: data.lobby_id };
+      if (isMountedRef.current) {
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error("Error joining lobby:", error);
+      throw error;
+    }
+  };
+
+  // WebSocket connection
+  const { readyState, lastMessage, sendMessage } = useWebSocket(
+    isValidLobby && lobbyId
+      ? `${import.meta.env.VITE_SERVER_WS_URL}/lobbies/${lobbyId}`
+      : null,
+    {
+      shouldReconnect: () => isMountedRef.current,
+      reconnectAttempts: 10,
+      reconnectInterval: 3000,
+      onOpen: () => {
+        console.log(
+          `WebSocket opened for ${user.player_id} in lobby ${lobbyId}`
+        );
+        if (user.player_id) {
+          sendMessage(
+            JSON.stringify({
+              type: "init",
+              lobby_id: lobbyId,
+              player_id: user.player_id,
+            })
+          );
+        }
+      },
+      onClose: () => {
+        console.log(
+          `WebSocket closed for ${user.player_id} in lobby ${lobbyId}`
+        );
+        const updatedUser = { ...user, lobby_id: "" };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      },
+      onError: (event) => {
+        console.error(`😿 WebSocket error for lobby ${lobbyId}:`, event);
+      },
+    }
   );
 
-  // Check lobby existence
+  // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Reset hasJoinedRef when lobbyId changes
+  useEffect(() => {
+    hasJoinedRef.current = false;
+  }, [lobbyId]);
+
+  useEffect(() => {
+    // Check if we're leaving right at the start and skip if join if we are
+    if (isLeavingRef.current) {
+      return;
+    }
+
     if (!lobbyId) {
       setError("No lobby ID provided");
       setIsValidLobby(false);
+      return;
+    }
+
+    if (hasJoinedRef.current || user.lobby_id === lobbyId) {
+      setIsValidLobby(true);
+      setError(null);
       return;
     }
 
@@ -73,70 +140,44 @@ const Lobby = () => {
       .then(() => {
         setIsValidLobby(true);
         setError(null);
-        // If no player_id, join the lobby
-        if (!playerId) {
-          joinLobby(lobbyId)
-            .then((newPlayerId) => {
-              console.log("yoza " + lobbyId);
-              console.log("gyoza " + newPlayerId);
 
-              setPlayerId(newPlayerId);
-              sendMessage(
-                JSON.stringify({ type: "initDirect", lobbyId, newPlayerId })
-              );
-            })
-            .catch((err) => {
-              setError(err.message || "Failed to join lobby");
-              setIsValidLobby(false);
-            });
-        }
+        hasJoinedRef.current = true;
+        joinLobby(lobbyId)
+          .then(() => {
+            sendMessage(
+              JSON.stringify({
+                type: "initDirect",
+                lobby_id: lobbyId,
+                player_id: user.player_id,
+              })
+            );
+          })
+          .catch((err) => {
+            hasJoinedRef.current = false;
+            throw err;
+          });
       })
       .catch((err) => {
+        setError(err.message || "Failed to join lobby");
         setIsValidLobby(false);
-        setError(err.message || "Failed to check lobby");
       });
-  }, [lobbyId, playerId]);
+  }, [lobbyId, user.lobby_id]);
 
-  // WebSocket connection
-  const { readyState, lastMessage, sendMessage } = useWebSocket(
-    isValidLobby && lobbyId
-      ? `${import.meta.env.VITE_SERVER_WS_URL}lobbies/${lobbyId}`
-      : null,
-    {
-      shouldReconnect: () => true,
-      reconnectAttempts: 10,
-      reconnectInterval: 3000,
-      onOpen: () => {
-        console.log(`WebSocket opened for lobby ${lobbyId}`);
-        if (playerId != null) {
-          console.log(playerId);
-          sendMessage(JSON.stringify({ type: "init", lobbyId, playerId }));
-        }
-      },
-      onClose: () => {
-        sessionStorage.removeItem("player_id"); // Clean up on leave
-        console.log(`WebSocket closed for lobby ${lobbyId}`);
-      },
-    }
-  );
-
-  // Log connection status (for debugging)
-  useEffect(() => {
-    if (readyState === WebSocket.OPEN) {
-      console.log(`WebSocket connected to lobby ${lobbyId}`);
-    } else if (readyState === WebSocket.CLOSED) {
-      console.log(`WebSocket disconnected from lobby ${lobbyId}`);
-    }
-  }, [readyState, lobbyId]);
-
+  // Log received messages for debugging
   useEffect(() => {
     if (lastMessage) {
-      console.log("Received message:", lastMessage.data);
+      console.log("📬 Received message:", lastMessage.data);
     }
   }, [lastMessage]);
 
+  // Handle leave lobby
   const handleLeaveLobby = () => {
-    sessionStorage.removeItem("player_id"); // Clean up on leave
+    isLeavingRef.current = true;
+    const updatedUser = { ...user, lobby_id: "" };
+    if (isMountedRef.current) {
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
     navigate("/");
   };
 
@@ -152,12 +193,8 @@ const Lobby = () => {
         <Typography variant="h4" color="error">
           {error}
         </Typography>
-        <Button
-          variant="contained"
-          onClick={() => navigate("/")}
-          sx={{ mt: 2 }}
-        >
-          Back to Lobby Manager
+        <Button variant="contained" onClick={handleLeaveLobby} sx={{ mt: 2 }}>
+          Home
         </Button>
       </DefaultBox>
     );
@@ -167,7 +204,7 @@ const Lobby = () => {
     <DefaultBox>
       <Typography variant="h4">Lobby: {lobbyId}</Typography>
       <Typography variant="body1">
-        Player ID: {playerId || "Not joined"}
+        Player ID: {user.player_id || "Not joined"}
       </Typography>
       <Typography variant="body1">
         WebSocket Status:{" "}

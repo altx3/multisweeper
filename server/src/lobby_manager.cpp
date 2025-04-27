@@ -3,6 +3,7 @@
 
 auto LobbyManager::create_lobby(const player_id_t &host_id) -> lobby_id_t
 {
+
   auto lobby_id = generate_random_id<lobby_id_t>("lobby_");
   lobbies_.emplace(lobby_id, Lobby(lobby_id, host_id));
   return lobby_id;
@@ -27,7 +28,7 @@ auto LobbyManager::join_lobby(const lobby_id_t &lobby_id,
                               const player_id_t &player_id) -> bool
 {
   Lobby *lobby = get_lobby(lobby_id);
-  if (lobby != nullptr)
+  if (lobby != nullptr && !player_id.empty())
   {
     lobby->add_player(player_id);
     return true;

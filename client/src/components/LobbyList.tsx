@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { GetLobbiesResponse, Lobby } from "../types/typings";
 
-const API_URL = "http://localhost:9001/lobbies";
+const API_URL = `${import.meta.env.VITE_SERVER_HTTP_URL}/lobbies`;
 const POLL_INTERVAL = 1000;
 
 const LobbyList = () => {
@@ -48,8 +48,6 @@ const LobbyList = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
-
-  console.log(lobbies);
 
   return (
     <Box>

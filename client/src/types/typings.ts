@@ -11,3 +11,9 @@ export interface CreateLobbyResponse {
 export interface GetLobbiesResponse {
   lobbies: Lobby[];
 }
+
+export interface User {
+  player_id: string;
+  username: string;
+  lobby_id: string;
+}
