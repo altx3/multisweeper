@@ -2,6 +2,7 @@
 
 #include <random>
 #include <string>
+#include <utility>
 
 #include "uuid.hpp"
 
@@ -15,7 +16,7 @@ template <typename T, typename Tag> struct StrongTypedef
 {
   T value;
 
-  explicit StrongTypedef(const T &v) : value(v) {}
+  explicit StrongTypedef(T v) : value(std::move(v)) {}
   StrongTypedef() = default;
 
   auto operator==(const StrongTypedef &other) const -> bool
@@ -36,7 +37,7 @@ template <typename T, typename Tag> struct StrongTypedef
     return value;
   }
 
-  auto empty() const -> decltype(std::declval<const T &>().empty(), bool())
+  [[nodiscard]] auto empty() const -> bool
   {
     return value.empty();
   }

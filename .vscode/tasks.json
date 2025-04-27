@@ -81,8 +81,10 @@
     },
     {
       "label": "Lint Server (clang-tidy)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["meson: remove", "meson: build"],
       "type": "shell",
-      "command": "find ./src ./include -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -print0 | xargs -0 -P$(nproc) -I{} clang-tidy -p ./build {} -- -I./include",
+      "command": "find src include -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -print0 | xargs -0 -P$(nproc) -I{} clang-tidy -p build {} -- -Iinclude",
       "group": {
         "kind": "test",
         "isDefault": false
@@ -106,8 +108,10 @@
     },
     {
       "label": "Lint Server:fix (clang-tidy)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["meson: remove", "meson: build"],
       "type": "shell",
-      "command": "find ./src ./include -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -print0 | xargs -0 -P$(nproc) -I{} clang-tidy -fix -p ./build {} -- -I./include",
+      "command": "find src include -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -print0 | xargs -0 -I{} clang-tidy -fix -p ./build {} -- -Iinclude",
       "group": {
         "kind": "test",
         "isDefault": false
