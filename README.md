@@ -56,7 +56,7 @@ Documention and testing later x3
 
 ### Developer
 
-1. Install clang-tidy and clang-format with MSYS2 with `pacman -S mingw-w64-x86_64-clang-tools-extra`
+1. Install clang-tidy and clang-format with MSYS2 with `pacman -S mingw-w64-x86_64-clang-tools-extra`, we want version 20.1.3
 2. Documention and testing later x3
 
 ## Frontend (React)
