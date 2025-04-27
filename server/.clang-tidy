@@ -20,6 +20,7 @@ ExtraArgs:
   - "-std=c++17"
 
 ExtraArgsBefore:
+  - "-isystem./subprojects/nlohmann_json-3.12.0/single_include"
   - "-isystem./subprojects/uWebSockets-v20.74.0/src"
   - "-isystem./subprojects/uSockets-833497e8e0988f7fd8d33cd4f6f36056c68d225d/src"
   - "-isystem./subprojects/libuv-v1.49.1"

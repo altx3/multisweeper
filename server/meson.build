@@ -6,16 +6,23 @@ project('multisweeper-server', 'cpp',
 # Dependencies
 
 uWebSockets_dep = dependency('uWebSockets')
+nlohmann_json_dep = dependency('nlohmann_json')
 
 # Multisweeper++
 
 inc = include_directories('include')
 
 src = [
+    'src/http_handler.cpp',
+    'src/lobby_manager.cpp',
+    'src/lobby.cpp',
+    'src/logger.cpp',
     'src/main.cpp',
-    'src/utils/logger.cpp'
+    'src/player.cpp',
+    'src/uuid.cpp',
+    'src/websocket_handler.cpp'
 ]
 
 executable('multisweeper-server', src,
             include_directories : inc,
-            dependencies: [uWebSockets_dep])
+            dependencies: [uWebSockets_dep, nlohmann_json_dep])
