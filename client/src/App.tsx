@@ -31,7 +31,7 @@ function App() {
         })
         .catch((e) => console.error("Failed to create user", e));
     }
-  }, [user.userId]);
+  }, [user.player_id]);
 
   return (
     <UserProvider user={user} setUser={setUser}>
