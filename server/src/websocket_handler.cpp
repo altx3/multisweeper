@@ -46,11 +46,35 @@ void WebSocketHandler::on_message(
         ", player_id: " + std::string(ws_data->player_id));
       connections_[ws_data->player_id] = ws;
     }
+    else if (j["type"] == "mouse_move")
+    {
+      Lobby *lobby = lobby_manager_->get_lobby(ws_data->lobby_id);
+      std::vector<player_id_t> players = lobby->get_players();
+
+      json message = {{"type", "mouse_update"},
+                      {"player_id", std::string(ws_data->player_id)},
+                      {"x", j["x"]},
+                      {"y", j["y"]}};
+
+      std::string message_str = message.dump();
+
+      for (const auto &[id, conn] : connections_)
+      {
+        if (id != ws_data->player_id && lobby->is_player_in_lobby(id))
+        {
+          conn->send(message_str, uWS::OpCode::TEXT);
+        }
+      }
+    }
+    else
+    {
+      Logger::warn("Unhandled message type: " + j["type"].get<std::string>());
+    }
   }
   catch (const std::exception &e)
   {
-    Logger::log(std::string(message));
-    Logger::log("Error parsing message: " + std::string(e.what()));
+    Logger::warn(std::string(message));
+    Logger::warn("Error parsing message: " + std::string(e.what()));
   }
 }
 

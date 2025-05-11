@@ -27,6 +27,6 @@ private:
 
   LobbyManager *lobby_manager_;
   uWS::App *app_;
-  std::map<std::string, uWS::WebSocket<false, true, WebSocketData> *>
+  std::map<player_id_t, uWS::WebSocket<false, true, WebSocketData> *>
     connections_;
 };

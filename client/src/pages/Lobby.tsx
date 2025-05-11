@@ -2,11 +2,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
-import { Button, Typography } from "@mui/material";
-import DefaultBox from "../components/common/DefaultBox";
+import { Box, Button, Typography } from "@mui/material";
 
 import { CreateLobbyResponse } from "../types/typings";
 import { useUser } from "../contexts/UserContext";
+import DefaultBox from "../components/common/DefaultBox";
+import GameBoard from "../components/GameBoard";
 
 const Lobby = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const Lobby = () => {
   const { lobbyId } = useParams<{ lobbyId: string }>();
   const [isValidLobby, setIsValidLobby] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cursors, setCursors] = useState<Map<string, { x: number; y: number }>>(
+    new Map()
+  );
 
   const checkLobbyExists = async (lobbyId: string) => {
     try {
@@ -167,6 +171,17 @@ const Lobby = () => {
   useEffect(() => {
     if (lastMessage) {
       console.log("📬 Received message:", lastMessage.data);
+      try {
+        const data = JSON.parse(lastMessage.data);
+        if (data.type === "mouse_update") {
+          // Update cursors state with new mouse position
+          setCursors((prev) =>
+            new Map(prev).set(data.player_id, { x: data.x, y: data.y })
+          );
+        }
+      } catch (error) {
+        console.error("Error parsing message:", error);
+      }
     }
   }, [lastMessage]);
 
@@ -201,24 +216,32 @@ const Lobby = () => {
   }
 
   return (
-    <DefaultBox>
-      <Typography variant="h4">Lobby: {lobbyId}</Typography>
-      <Typography variant="body1">
-        Player ID: {user.player_id || "Not joined"}
-      </Typography>
-      <Typography variant="body1">
-        WebSocket Status:{" "}
-        {readyState === WebSocket.OPEN ? "Connected" : "Disconnected"}
-      </Typography>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleLeaveLobby}
-        sx={{ mt: 2 }}
-      >
-        Leave Lobby
-      </Button>
-    </DefaultBox>
+    <Box position="relative">
+      <GameBoard
+        sendMessage={sendMessage}
+        cursors={cursors}
+        playerId={user.player_id}
+      />
+
+      <DefaultBox>
+        <Typography variant="h4">Lobby: {lobbyId}</Typography>
+        <Typography variant="body1">
+          Player ID: {user.player_id || "Not joined"}
+        </Typography>
+        <Typography variant="body1">
+          WebSocket Status:{" "}
+          {readyState === WebSocket.OPEN ? "Connected" : "Disconnected"}
+        </Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleLeaveLobby}
+          sx={{ mt: 2 }}
+        >
+          Leave Lobby
+        </Button>
+      </DefaultBox>
+    </Box>
   );
 };
 
