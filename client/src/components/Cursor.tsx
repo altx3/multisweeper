@@ -14,7 +14,7 @@ const Cursor = ({ left, top }: Props) => {
       src={CursorImage}
       sx={{
         position: "absolute",
-        width: "0.75rem",
+        height: "15px",
         zIndex: 10,
         left: `${left}px`,
         top: `${top}px`,

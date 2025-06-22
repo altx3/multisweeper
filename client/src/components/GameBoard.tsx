@@ -66,10 +66,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       }}
     >
       {Array.from(cursors.entries()).map(([id, pos]) => {
+        var y =
+          pos.y * (gameBoardRef.current?.getBoundingClientRect().height || 0);
+        if (y > y - 15) {
+          y = y - 15;
+        }
         if (gameBoardRef.current) {
-          const rect = gameBoardRef.current.getBoundingClientRect();
-          console.log(pos.x * rect.width);
-          console.log(pos.y * rect.height);
           return id !== playerId ? (
             <Cursor
               key={id}
@@ -77,10 +79,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 pos.x *
                 (gameBoardRef.current?.getBoundingClientRect().width || 0)
               }
-              top={
-                pos.y *
-                (gameBoardRef.current?.getBoundingClientRect().height || 0)
-              }
+              top={y}
             />
           ) : null;
         }
@@ -90,3 +89,5 @@ const GameBoard: React.FC<GameBoardProps> = ({
 };
 
 export default GameBoard;
+
+// max size, transparent (lose the game board ref/ change it to use the parent class)
