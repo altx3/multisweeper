@@ -19,13 +19,23 @@ auto Lobby::get_host_id() const -> const player_id_t &
   return host_id_;
 }
 
+auto Lobby::get_players() const -> const std::vector<player_id_t> &
+{
+  return player_ids_;
+}
+
+auto Lobby::is_player_in_lobby(const player_id_t &player_id) const -> bool
+{
+  return (std::find(player_ids_.begin(), player_ids_.end(), player_id) !=
+          player_ids_.end());
+}
+
 void Lobby::add_player(const player_id_t &player_id)
 {
   Logger::log("adding " + static_cast<std::string>(player_id));
 
   // Check if player_id already exists in player_ids_
-  if (std::find(player_ids_.begin(), player_ids_.end(), player_id) !=
-      player_ids_.end())
+  if (is_player_in_lobby(player_id))
   {
     Logger::warn("Player " + static_cast<std::string>(player_id) +
                  " already in lobby, skipping");
